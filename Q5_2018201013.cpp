@@ -1,18 +1,28 @@
 #include<bits/stdc++.h>
 using namespace std;
 
-class StringBuilder{
+struct node{
 
 	char *valuePtr;
-	vector<StringBuilder> list;
+	struct node *next = NULL; 
+};
+
+class StringBuilder{
+
+	
 
 	void preCompute(char pattern[], int lps[]){
 
 	    int index = 0, i;
 	    lps[0] = 0;
 	    i = 1;
+
+	    int length = 0;
+
+		while(pattern[length]!='\0')
+			length++;
 	    
-	    while(i<strlen(pattern)){
+	    while(i<length){
 
 		   if(pattern[i] == pattern[index]){
 			   index++;
@@ -35,7 +45,13 @@ class StringBuilder{
 	int subStringSearch(char mainString[], char pattern[]){
 
 		int j=0,i=0;
-		int lps[strlen(pattern)] = {0};
+
+	    int length = 0;
+
+		while(pattern[length]!='\0')
+			length++;
+
+		int lps[length] = {0};
 
 		preCompute(pattern,lps);
 
@@ -77,63 +93,68 @@ class StringBuilder{
 
 public: 
 
+	struct node *listHead = (struct node *)malloc(sizeof(struct node));
+	struct node *listTail = listHead;
+
+
 	void stringInitialize(char *data){
 
-		valuePtr = data;
+		free(listHead);
+		this->listHead = (struct node *)malloc(sizeof(struct node));
+		this->listHead->valuePtr = data;
+		this->listHead->next = NULL;
+		this->listTail = this->listHead; 
+
 	}
 
 	void stringAppend(StringBuilder obj){
 
-		list.push_back(obj);
-
+		this->listTail->next = obj.listHead;
+		this->listTail = obj.listTail;
+		this->listTail->next = NULL;
 	}
 
 	int findSubstring(char* pattern){
 
+
 		int length = 0;
 
 		int i = 0;
-		while(valuePtr[i]!='\0'){
-			i++;
+
+		struct node *temp = this->listHead;
+
+		while(temp!=NULL){
+			
+			while(temp->valuePtr[i]!='\0'){
+				i++;
+			}	
+
+			
+			length += i;	
+			i = 0;
+		
+			temp = temp->next;
 		}
 
-		length += i;
 
-		for(i=0;i<list.size();i++){
-			int j = 0;
-			while(list[i].valuePtr[j]!='\0'){
-				j++;
-			}
-
-			length += j;
-		}
-
-
-		char mainString[length-1] = {'\0'};
-
+		char mainString[length] = {'\0'};
+		length = 0;
+		temp = this->listHead;
 		i = 0;
-		while(valuePtr[i]!='\0'){
-			mainString[i] = this->valuePtr[i];
-			i++;
-		}		
 
-		length = i;
+		while(temp!=NULL){
 
+			while(temp->valuePtr[i]!='\0'){
+				mainString[i+length] = temp->valuePtr[i];
+				i++;
+			}	
+			
+			temp = temp->next;
+			length += i;	
+			i = 0;
+		}
 
-		for(i=0;i<list.size();i++){
-			int j = 0;
-			while(list[i].valuePtr[j]!='\0'){
-				
-				mainString[length+j] = list[i].valuePtr[j];
-				j++;
-				
-			}
-
-			length += j;
-		}		
 		mainString[length] = '\0';
-
-		printf("%s\n", mainString);
 
 		return subStringSearch(mainString,pattern);
 	}
@@ -141,30 +162,57 @@ public:
 
 	void printString(){
 
-		int i = 0,length = 0;
+		int length = 0;
 
+		int i = 0;
 
-		printf("%s",this->valuePtr);
+		struct node *temp = this->listHead;
 		
+		while(temp!=NULL){
 
-		for(i=0;i<list.size();i++){
+			while(temp->valuePtr[i]!='\0'){
+				i++;
+			}	
+
+			temp = temp->next;
+			length += i;	
+			i = 0;
+		}
+
+		char mainString[length-1] = {'\0'};
 		
-			printf("%s",list[i].valuePtr);
-		}		
-		cout<<"\n";
+		length = 0;
+		temp = this->listHead;
+		i = 0;
+
+		while(temp!=NULL){
+
+			while(temp->valuePtr[i]!='\0'){
+				mainString[i+length] = temp->valuePtr[i];
+				i++;
+			}	
+			temp = temp->next;
+			length += i;	
+			i = 0;
+		}
+		mainString[length] = '\0';
+		printf("%s\n",mainString );
 	}
 
 };
 
 int main(){
 
-	StringBuilder s1,s2,s3;
+	StringBuilder s1,s2,s3,s4;
 
  	s1.stringInitialize("Hello");
  	s2.stringInitialize("Prakash");
  	s3.stringInitialize("Jha");
+ 	s4.stringInitialize("ok");
  	
  	s1.stringAppend(s2);
+ 	s3.stringAppend(s4);
+    // s1.stringAppend(s3);
     // s2.stringAppend(s3);
     // s3.stringAppend(s1);
 
@@ -179,6 +227,6 @@ int main(){
  	s1.printString();
  	s2.printString();
  	s3.printString();
-	
+	s4.printString();
 	return 0;
 }

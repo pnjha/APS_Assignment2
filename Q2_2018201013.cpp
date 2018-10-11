@@ -140,7 +140,7 @@ void traversal(struct btreeNode *root) {
 int main(){
 
     int value, choice;
-    while (1) {
+    while(1){
             
         cout<<"1. Insertion\n2. Searching\n3. Traversal\n4. Exit\nEnter your choice: ";
         
